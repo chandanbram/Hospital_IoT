@@ -9,53 +9,54 @@ export default function NurseDashboard() {
   const [patientId, setPatientId] = useState('');
   const [selectedPatient, setSelectedPatient] = useState(null);
 
-useEffect(() => {
-  const fetchData = async () => {
-    try {
-      const response = await fetch('https://hospital-esp-backend.onrender.com/api/sensordata');
-      const rawData = await response.json();
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await fetch('https://hospital-esp-backend.onrender.com/api/sensordata');
+        const rawData = await response.json();
 
-      const grouped = {};
-     rawData.forEach(entry => {
-  if (!grouped[entry.id]) {
-    grouped[entry.id] = {
-      id: entry.id,
-      name: entry.name || 'Unknown',
-      room: entry.room || 'N/A',
-      bed: entry.bed || 'N/A',
-      diagnosis: entry.diagnosis || 'N/A',
-      spo2: Math.round(entry.spo2),
-      heartRate: Math.round(entry.heartRate),
-      temperature: Math.round(entry.temperature),
-      data: []
+        const grouped = {};
+        rawData.forEach(entry => {
+          const tempF = +(entry.temperature * 9 / 5 + 32).toFixed(1); // °F with 1 decimal
+          const spo2 = Math.round(entry.spo2);
+          const heartRate = Math.round(entry.heartRate);
+
+          if (!grouped[entry.id]) {
+            grouped[entry.id] = {
+              id: entry.id,
+              name: entry.name || 'Unknown',
+              room: entry.room || 'N/A',
+              bed: entry.bed || 'N/A',
+              diagnosis: entry.diagnosis || 'N/A',
+              spo2,
+              heartRate,
+              temperature: tempF,
+              data: []
+            };
+          }
+
+          grouped[entry.id].data.push({
+            time: entry.time || new Date().toLocaleTimeString(),
+            spo2,
+            heartRate,
+            temperature: tempF
+          });
+
+          // Keep only the last 10 readings
+          grouped[entry.id].data = grouped[entry.id].data.slice(-10);
+        });
+
+        setPatientsData(grouped);
+      } catch (error) {
+        console.error("Failed to fetch data:", error);
+      }
     };
-  }
 
-  grouped[entry.id].data.push({
-    time: entry.time || new Date().toLocaleTimeString(),
-    spo2: Math.round(entry.spo2),
-    heartRate: Math.round(entry.heartRate),
-    temperature: Math.round(entry.temperature)
-  });
+    fetchData();
+    const interval = setInterval(fetchData, 1000);
+    return () => clearInterval(interval);
+  }, []);
 
-  // ✅ Limit to last 10 data points
-  grouped[entry.id].data = grouped[entry.id].data.slice(-10);
-});
-
-
-      setPatientsData(grouped);
-    } catch (error) {
-      console.error("Failed to fetch data:", error);
-    }
-  };
-
-  fetchData(); // initial fetch
-  const interval = setInterval(fetchData, 1000); // 🔁 update every second
-  return () => clearInterval(interval);
-}, []);
-
-
-  // 2️⃣ Sync selected patient with latest vitals
   useEffect(() => {
     if (patientId && patientsData[patientId]) {
       setSelectedPatient(patientsData[patientId]);
@@ -73,8 +74,8 @@ useEffect(() => {
         if ((value >= 50 && value < 60) || (value > 100 && value <= 110)) return 'orange';
         return 'red';
       case 'temperature':
-        if (value >= 36.5 && value <= 37.5) return 'green';
-        if ((value >= 36.0 && value < 36.5) || (value > 37.5 && value <= 38.5)) return 'orange';
+        if (value >= 97.7 && value <= 99.5) return 'green';
+        if ((value >= 96.8 && value < 97.7) || (value > 99.5 && value <= 101.3)) return 'orange';
         return 'red';
       default:
         return '#000';
@@ -222,7 +223,7 @@ useEffect(() => {
               <div className="vital-card">
                 <div className="vital-header">Temperature</div>
                 <h2 className="vital-value" style={{ color: getVitalColor('temperature', selectedPatient.temperature) }}>
-                  {selectedPatient.temperature}°C
+                  {selectedPatient.temperature}°F
                 </h2>
                 {renderChart(selectedPatient.data, 'temperature', getVitalColor('temperature', selectedPatient.temperature))}
               </div>
