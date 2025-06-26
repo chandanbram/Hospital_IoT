@@ -1,73 +1,72 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import './NurseDashboard.css';
 import {
   LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer
 } from 'recharts';
 
-const [patientsData, setPatientsData] = useState({});
-useEffect(() => {
-  const fetchData = async () => {
-    try {
-      const response = await fetch('https://hospital-esp-backend.onrender.com/api/sensordata');
-      const rawData = await response.json();
-
-      const grouped = {};
-      rawData.forEach(entry => {
-        if (!grouped[entry.id]) {
-          grouped[entry.id] = {
-            id: entry.id,
-            name: entry.name || 'Unknown',
-            room: entry.room || 'N/A',
-            bed: entry.bed || 'N/A',
-            diagnosis: entry.diagnosis || 'N/A',
-            spo2: entry.spo2,
-            heartRate: entry.heartRate,
-            temperature: entry.temperature,
-            data: []
-          };
-        }
-        grouped[entry.id].data.push({
-          time: entry.time || new Date().toLocaleTimeString(),
-          spo2: entry.spo2,
-          heartRate: entry.heartRate,
-          temperature: entry.temperature
-        });
-      });
-
-      setPatientsData(grouped);
-    } catch (error) {
-      console.error("Failed to fetch data:", error);
-    }
-  };
-
-  fetchData(); // initial fetch
-  const interval = setInterval(fetchData, 5000); // refresh every 5 seconds
-  return () => clearInterval(interval);
-}, []);
-
-
-const getVitalColor = (type, value) => {
-  switch (type) {
-    case 'spo2':
-      if (value >= 95) return 'green';
-      if (value >= 90) return 'orange';
-      return 'red';
-    case 'heartRate':
-      if (value >= 60 && value <= 100) return 'green';
-      if ((value >= 50 && value < 60) || (value > 100 && value <= 110)) return 'orange';
-      return 'red';
-    case 'temperature':
-      if (value >= 36.5 && value <= 37.5) return 'green';
-      if ((value >= 36.0 && value < 36.5) || (value > 37.5 && value <= 38.5)) return 'orange';
-      return 'red';
-    default:
-      return '#000';
-  }
-};
-
 export default function NurseDashboard() {
+  const [patientsData, setPatientsData] = useState({});
   const [patientId, setPatientId] = useState('');
   const [selectedPatient, setSelectedPatient] = useState(null);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await fetch('https://hospital-esp-backend.onrender.com/api/sensordata');
+        const rawData = await response.json();
+
+        const grouped = {};
+        rawData.forEach(entry => {
+          if (!grouped[entry.id]) {
+            grouped[entry.id] = {
+              id: entry.id,
+              name: entry.name || 'Unknown',
+              room: entry.room || 'N/A',
+              bed: entry.bed || 'N/A',
+              diagnosis: entry.diagnosis || 'N/A',
+              spo2: entry.spo2,
+              heartRate: entry.heartRate,
+              temperature: entry.temperature,
+              data: []
+            };
+          }
+          grouped[entry.id].data.push({
+            time: entry.time || new Date().toLocaleTimeString(),
+            spo2: entry.spo2,
+            heartRate: entry.heartRate,
+            temperature: entry.temperature
+          });
+        });
+
+        setPatientsData(grouped);
+      } catch (error) {
+        console.error("Failed to fetch data:", error);
+      }
+    };
+
+    fetchData(); // initial fetch
+    const interval = setInterval(fetchData, 5000); // refresh every 5 sec
+    return () => clearInterval(interval);
+  }, []);
+
+  const getVitalColor = (type, value) => {
+    switch (type) {
+      case 'spo2':
+        if (value >= 95) return 'green';
+        if (value >= 90) return 'orange';
+        return 'red';
+      case 'heartRate':
+        if (value >= 60 && value <= 100) return 'green';
+        if ((value >= 50 && value < 60) || (value > 100 && value <= 110)) return 'orange';
+        return 'red';
+      case 'temperature':
+        if (value >= 36.5 && value <= 37.5) return 'green';
+        if ((value >= 36.0 && value < 36.5) || (value > 37.5 && value <= 38.5)) return 'orange';
+        return 'red';
+      default:
+        return '#000';
+    }
+  };
 
   const handleSearch = () => {
     const data = patientsData[patientId.trim()];
@@ -139,33 +138,32 @@ export default function NurseDashboard() {
             </div>
 
             <div className="two-column-section">
-              
-
               <div className="table-container">
-    <h3>Recent Patients</h3>
-    <table>
-      <thead>
-        <tr>
-          <th>Patient</th>
-          <th>Room</th>
-          <th>Last Visit</th>
-        </tr>
-      </thead>
-      <tbody>
-        {Object.values(patientsData).map((p) => (
-          <tr
-            key={p.id}
-            onClick={() => handleRecentClick(p.id)}
-            style={{ cursor: 'pointer' }}
-          >
-            <td>{p.name}</td>
-            <td>{p.room}</td>
-            <td>June 19, 2025</td>
-          </tr>
-        ))}
-      </tbody>
-    </table>
-  </div>
+                <h3>Recent Patients</h3>
+                <table>
+                  <thead>
+                    <tr>
+                      <th>Patient</th>
+                      <th>Room</th>
+                      <th>Last Visit</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {Object.values(patientsData).map((p) => (
+                      <tr
+                        key={p.id}
+                        onClick={() => handleRecentClick(p.id)}
+                        style={{ cursor: 'pointer' }}
+                      >
+                        <td>{p.name}</td>
+                        <td>{p.room}</td>
+                        <td>{new Date().toLocaleDateString()}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+
               <div className="table-container">
                 <h3>Medication Schedule</h3>
                 <table>
