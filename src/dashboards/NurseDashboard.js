@@ -9,6 +9,7 @@ export default function NurseDashboard() {
   const [patientId, setPatientId] = useState('');
   const [selectedPatient, setSelectedPatient] = useState(null);
 
+  // Fetch sensor data every second
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -17,7 +18,7 @@ export default function NurseDashboard() {
 
         const grouped = {};
         rawData.forEach(entry => {
-          const tempF = +(entry.temperature * 9 / 5 + 32).toFixed(1); // °F with 1 decimal
+          const tempF = +(entry.temperature * 9 / 5 + 32).toFixed(1); // convert °C → °F
           const spo2 = Math.round(entry.spo2);
           const heartRate = Math.round(entry.heartRate);
 
@@ -28,6 +29,9 @@ export default function NurseDashboard() {
               room: entry.room || 'N/A',
               bed: entry.bed || 'N/A',
               diagnosis: entry.diagnosis || 'N/A',
+              spo2,
+              heartRate,
+              temperature: tempF,
               data: []
             };
           }
@@ -39,13 +43,7 @@ export default function NurseDashboard() {
             temperature: tempF
           });
 
-          grouped[entry.id].data = grouped[entry.id].data.slice(-10); // Keep only last 10
-
-          // Update live vitals from latest reading
-          const latest = grouped[entry.id].data[grouped[entry.id].data.length - 1];
-          grouped[entry.id].spo2 = latest.spo2;
-          grouped[entry.id].heartRate = latest.heartRate;
-          grouped[entry.id].temperature = latest.temperature;
+          grouped[entry.id].data = grouped[entry.id].data.slice(-10); // last 10 only
         });
 
         setPatientsData(grouped);
@@ -55,13 +53,16 @@ export default function NurseDashboard() {
     };
 
     fetchData();
-    const interval = setInterval(fetchData, 1000); // Update every second
+    const interval = setInterval(fetchData, 1000); // every second
     return () => clearInterval(interval);
   }, []);
 
+  // Update selected patient when data or ID changes
   useEffect(() => {
     if (patientId && patientsData[patientId]) {
-      setSelectedPatient(patientsData[patientId]);
+      setSelectedPatient({ ...patientsData[patientId] });
+    } else if (!patientId) {
+      setSelectedPatient(null);
     }
   }, [patientsData, patientId]);
 
@@ -76,8 +77,8 @@ export default function NurseDashboard() {
         if ((value >= 50 && value < 60) || (value > 100 && value <= 110)) return 'orange';
         return 'red';
       case 'temperature':
-        if (value >= 97.7 && value <= 99.5) return 'green'; // Human normal in °F
-        if ((value >= 96.5 && value < 97.7) || (value > 99.5 && value <= 100.5)) return 'orange';
+        if (value >= 97.7 && value <= 99.5) return 'green'; // °F normal range
+        if ((value >= 96.8 && value < 97.7) || (value > 99.5 && value <= 101.3)) return 'orange';
         return 'red';
       default:
         return '#000';
