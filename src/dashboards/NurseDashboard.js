@@ -9,6 +9,7 @@ export default function NurseDashboard() {
   const [patientId, setPatientId] = useState('');
   const [selectedPatient, setSelectedPatient] = useState(null);
 
+  // 1️⃣ Fetch sensor data every 5 seconds
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -48,6 +49,13 @@ export default function NurseDashboard() {
     const interval = setInterval(fetchData, 5000); // refresh every 5 sec
     return () => clearInterval(interval);
   }, []);
+
+  // 2️⃣ Sync selected patient with latest vitals
+  useEffect(() => {
+    if (patientId && patientsData[patientId]) {
+      setSelectedPatient(patientsData[patientId]);
+    }
+  }, [patientsData, patientId]);
 
   const getVitalColor = (type, value) => {
     switch (type) {
