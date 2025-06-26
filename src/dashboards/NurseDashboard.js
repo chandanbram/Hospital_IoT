@@ -9,46 +9,51 @@ export default function NurseDashboard() {
   const [patientId, setPatientId] = useState('');
   const [selectedPatient, setSelectedPatient] = useState(null);
 
-  // 1️⃣ Fetch sensor data every 5 seconds
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await fetch('https://hospital-esp-backend.onrender.com/api/sensordata');
-        const rawData = await response.json();
+useEffect(() => {
+  const fetchData = async () => {
+    try {
+      const response = await fetch('https://hospital-esp-backend.onrender.com/api/sensordata');
+      const rawData = await response.json();
 
-        const grouped = {};
-        rawData.forEach(entry => {
-          if (!grouped[entry.id]) {
-            grouped[entry.id] = {
-              id: entry.id,
-              name: entry.name || 'Unknown',
-              room: entry.room || 'N/A',
-              bed: entry.bed || 'N/A',
-              diagnosis: entry.diagnosis || 'N/A',
-              spo2: entry.spo2,
-              heartRate: entry.heartRate,
-              temperature: entry.temperature,
-              data: []
-            };
-          }
-          grouped[entry.id].data.push({
-            time: entry.time || new Date().toLocaleTimeString(),
-            spo2: entry.spo2,
-            heartRate: entry.heartRate,
-            temperature: entry.temperature
-          });
-        });
-
-        setPatientsData(grouped);
-      } catch (error) {
-        console.error("Failed to fetch data:", error);
-      }
+      const grouped = {};
+     rawData.forEach(entry => {
+  if (!grouped[entry.id]) {
+    grouped[entry.id] = {
+      id: entry.id,
+      name: entry.name || 'Unknown',
+      room: entry.room || 'N/A',
+      bed: entry.bed || 'N/A',
+      diagnosis: entry.diagnosis || 'N/A',
+      spo2: Math.round(entry.spo2),
+      heartRate: Math.round(entry.heartRate),
+      temperature: Math.round(entry.temperature),
+      data: []
     };
+  }
 
-    fetchData(); // initial fetch
-    const interval = setInterval(fetchData, 5000); // refresh every 5 sec
-    return () => clearInterval(interval);
-  }, []);
+  grouped[entry.id].data.push({
+    time: entry.time || new Date().toLocaleTimeString(),
+    spo2: Math.round(entry.spo2),
+    heartRate: Math.round(entry.heartRate),
+    temperature: Math.round(entry.temperature)
+  });
+
+  // ✅ Limit to last 10 data points
+  grouped[entry.id].data = grouped[entry.id].data.slice(-10);
+});
+
+
+      setPatientsData(grouped);
+    } catch (error) {
+      console.error("Failed to fetch data:", error);
+    }
+  };
+
+  fetchData(); // initial fetch
+  const interval = setInterval(fetchData, 1000); // 🔁 update every second
+  return () => clearInterval(interval);
+}, []);
+
 
   // 2️⃣ Sync selected patient with latest vitals
   useEffect(() => {
