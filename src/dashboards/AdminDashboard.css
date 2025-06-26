@@ -1,0 +1,276 @@
+/* Responsive AdminDashboard.css */
+.dashboard-container {
+  display: flex;
+  height: 100vh;
+  font-family: 'Segoe UI', sans-serif;
+  background-color: #f6f8fc;
+}
+
+/* Sidebar */
+.sidebar {
+  width: 18vw;
+  max-width: 230px;
+  min-width: 160px;
+  background-color: #0f1762;
+  color: white;
+  padding: 2vh 1vw;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+}
+
+.sidebar h2 {
+  font-size: 1.6vw;
+  margin-bottom: 3vh;
+  text-align: center;
+  font-weight: bold;
+}
+
+.sidebar ul {
+  list-style: none;
+  padding: 0;
+}
+
+.sidebar li {
+  padding: 1.2vh 1.5vw;
+  font-size: 0.95vw;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+}
+
+.sidebar li:hover {
+  text-decoration: underline;
+}
+
+/* Main Dashboard Content */
+.dashboard-content {
+  flex-grow: 1;
+  padding: 3vh 3vw;
+  overflow-y: auto;
+}
+
+h1 {
+  font-size: 2vw;
+  margin-bottom: 2vh;
+  color: #1f3c88;
+}
+
+/* Profile Card */
+.profile-card {
+  background-color: white;
+  border-radius: 12px;
+  padding: 2vh 2vw;
+  margin-bottom: 3vh;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.profile-card .details h2 {
+  font-size: 1.4vw;
+  margin: 0;
+}
+
+.profile-card .details p {
+  font-size: 1vw;
+  margin: 0.6vh 0;
+  font-weight: 500;
+}
+
+.profile-card .details div {
+  color: #666;
+  font-size: 0.95vw;
+}
+
+/* Summary Cards */
+.summary-cards {
+  display: flex;
+  gap: 1.5vw;
+  margin-bottom: 3vh;
+  flex-wrap: wrap;
+}
+
+.summary-card {
+  flex: 1;
+  padding: 2vh 1.5vw;
+  font-size: 1vw;
+  background-color: white;
+  border-radius: 10px;
+  text-align: center;
+  font-weight: bold;
+  color: #2f3ebd;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+  min-width: 200px;
+}
+
+/* Panel Cards & Tables */
+.two-column-section {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2vw;
+  width: 100%;
+  margin-bottom: 4vh;
+}
+
+.panel-card {
+  background-color: white;
+  padding: 2vh 2vw;
+  border-radius: 16px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.06);
+}
+
+.panel-card h3 {
+  font-size: 1.2vw;
+  margin-bottom: 2vh;
+  color: #2f3ebd;
+}
+
+.panel-card table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.95vw;
+}
+
+.panel-card th,
+.panel-card td {
+  padding: 1.2vh 1vw;
+  text-align: left;
+  border-bottom: 1px solid #eee;
+}
+
+.panel-card th {
+  background-color: #f9f9f9;
+  font-weight: 600;
+  color: #2f3ebd;
+}
+
+.panel-card input[type="text"] {
+  width: 100%;
+  padding: 1vh 1vw;
+  margin-bottom: 2vh;
+  font-size: 0.95vw;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+}
+
+/* Status Tags */
+.status {
+  font-weight: bold;
+  padding: 0.4vh 0.8vw;
+  border-radius: 6px;
+  font-size: 0.85vw;
+  display: inline-block;
+}
+
+.status.online {
+  background-color: #e0f9e8;
+  color: #28a745;
+}
+
+.status.lagging {
+  background-color: #fff4e5;
+  color: #ff9800;
+}
+
+.status.offline {
+  background-color: #ffe6e6;
+  color: #f44336;
+}
+
+/* Buttons */
+button {
+  padding: 0.8vh 1.2vw;
+  border: none;
+  border-radius: 6px;
+  background-color: #2f3ebd;
+  color: white;
+  cursor: pointer;
+  font-size: 0.95vw;
+  transition: background-color 0.3s ease;
+}
+
+button:hover {
+  background-color: #1f2c8c;
+}
+
+/* System Logs & Alerts */
+.system-logs,
+.alerts-panel {
+  background-color: white;
+  border-radius: 16px;
+  padding: 2vh 2vw;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.06);
+  font-size: 0.95vw;
+}
+
+.system-logs h3,
+.alerts-panel h3 {
+  color: #2f3ebd;
+  margin-bottom: 2vh;
+  font-size: 1.1vw;
+}
+
+.system-logs ul,
+.alerts-panel ul {
+  list-style: none;
+  padding-left: 0;
+}
+
+.system-logs li,
+.alerts-panel li {
+  margin-bottom: 1vh;
+  padding: 1vh 1vw;
+  background-color: #f9fafc;
+  border-left: 4px solid #2f3ebd;
+  border-radius: 6px;
+  color: #333;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.04);
+}
+
+/* Logo */
+.logo-container {
+  text-align: center;
+  margin-top: 3vh;
+  margin-bottom: 4vh;
+}
+
+.logo-img {
+  width: 100%;
+  max-width: 170px;
+  height: auto;
+  display: block;
+  margin: 0 auto;
+  object-fit: contain;
+}
+
+/* Responsive Tweaks */
+@media (max-width: 768px) {
+  .sidebar {
+    width: 25vw;
+  }
+
+  .dashboard-content {
+    padding: 4vw;
+  }
+
+  .two-column-section {
+    grid-template-columns: 1fr;
+  }
+
+  .summary-cards {
+    flex-direction: column;
+  }
+
+  .panel-card h3,
+  .sidebar h2,
+  .table-container h3 {
+    font-size: 16px;
+  }
+
+  .panel-card th,
+  .panel-card td,
+  .panel-card input,
+  .status,
+  .button {
+    font-size: 14px;
+  }
+}

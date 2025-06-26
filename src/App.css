@@ -1,0 +1,214 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap');
+
+body, html {
+  margin: 0;
+  padding: 0;
+  font-family: 'Poppins', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background: linear-gradient(to bottom right, #f1f5f9, #e3ecf7);
+  height: 100%;
+  overflow: hidden;
+}
+
+.login-root {
+  height: 100vh;
+  width: 100vw;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: transparent;
+}
+
+.login-wrapper {
+  width: 98%;
+  max-width: 960px;
+  height: 85vh;
+  border-radius: 24px;
+  display: flex;
+  flex-direction: row;
+  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.15);
+  overflow: hidden;
+  backdrop-filter: blur(6px);
+  background: rgba(255, 255, 255, 0.7);
+}
+
+/* Left Panel */
+.left-pane {
+  width: 50%;
+  background: linear-gradient(135deg, #091636, #111a70);
+  color: white;
+  padding: 35px 30px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.project-title {
+  font-size: 40px;
+  font-weight: 800;
+  margin-top: 10px;
+  margin-bottom: 10px;
+  text-align: center;
+  width: 100%;
+  color: #f4c430; /* Updated primary text color */
+  text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.3);
+}
+
+.project-title-2 {
+  font-size: 20px;
+  font-weight: 400;
+  margin-bottom: 40px;
+  text-align: center;
+  width: 100%;
+  color: #e0e7ff;
+}
+
+.feature-ticker {
+  height: 400px;
+  margin-left: -60px;
+  overflow: hidden;
+  position: relative;
+}
+
+.feature-ticker ul {
+  display: block;
+  animation: scrollUpLoop 20s linear infinite;
+}
+
+.feature-ticker li {
+  font-size: 16px;
+  margin: 15px 0;
+  white-space: nowrap;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: #d0d8ff;
+  font-weight: 400;
+}
+
+.feature-ticker li::before {
+  content: "➤";
+  color: #f4c430; /* Golden arrow for premium feel */
+  font-size: 16px;
+}
+
+@keyframes scrollUpLoop {
+  0% { transform: translateY(0); }
+  100% { transform: translateY(-50%); } /* Only scroll half, since we duplicated */
+}
+
+
+/* Right Panel */
+.right-pane {
+  width: 50%;
+  background: #f4f9ff;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  padding: 30px;
+}
+
+.cbr-logo {
+  max-width: 250px;
+  margin-top: 10px;
+  margin-bottom: 20px;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
+}
+
+/* Login Card */
+.login-card {
+  width: 100%;
+  max-width: 320px;
+  padding: 30px 28px;
+  background: rgba(255, 255, 255, 0.85);
+  border-radius: 20px;
+  box-shadow: 0 18px 38px rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(5px);
+  text-align: left;
+  transition: all 0.3s ease;
+}
+
+.login-card h2 {
+  font-size: 24px;
+  font-weight: 600;
+  color: #0a2540;
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+/* Inputs */
+.input-field {
+  padding: 12px 20px;
+  margin: 12px 0;
+  border: 1.5px solid #cfd8dc;
+  border-radius: 14px;
+  font-size: 16px;
+  font-family: inherit;
+  transition: border 0.3s ease, box-shadow 0.3s ease;
+  outline: none;
+  width: 90%;
+  background: #fefefe;
+}
+
+.input-field:focus {
+  border-color: #0072ff;
+  box-shadow: 0 0 10px rgba(0, 114, 255, 0.25);
+}
+
+/* Button */
+.login-btn {
+  margin-top: 20px;
+  padding: 14px;
+  font-size: 18px;
+  font-weight: 600;
+  background: linear-gradient(135deg, #0c1c44, #111a70);
+  border: none;
+  border-radius: 14px;
+  color: #fff;
+  cursor: pointer;
+  width: 100%;
+  transition: background 0.3s ease, transform 0.2s ease;
+}
+
+.login-btn:hover {
+  background: linear-gradient(135deg, #0e204f, #131d7d);
+  transform: scale(1.03);
+}
+
+/* ✅ Plain red text error message */
+.login-card p {
+  color: red;
+  font-size: 14px;
+  margin-top: 8px;
+  text-align: center;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .login-wrapper {
+    flex-direction: column;
+    height: auto;
+    max-height: 100vh;
+  }
+
+  .left-pane, .right-pane {
+    width: 100%;
+    padding: 25px;
+  }
+
+  .feature-ticker {
+    height: auto;
+    animation: none;
+  }
+
+  .feature-ticker ul {
+    animation: none;
+  }
+
+  .cbr-logo {
+    max-width: 180px;
+  }
+}
