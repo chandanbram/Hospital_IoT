@@ -4,68 +4,47 @@ import {
   LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer
 } from 'recharts';
 
-const patientsData = {
-  '1': {
-    id: '1',
-    name: 'Sowjanya D',
-    room: '301A',
-    bed: 'B1',
-    diagnosis: 'Diabetes',
-    spo2: 97,
-    heartRate: 76,
-    temperature: 36.9,
-    data: [
-      { time: '10:00', spo2: 97, heartRate: 76, temperature: 36.9 },
-      { time: '10:10', spo2: 96, heartRate: 77, temperature: 37.1 },
-      { time: '10:20', spo2: 95, heartRate: 79, temperature: 37.3 }
-    ]
-  },
-  '2': {
-    id: '2',
-    name: 'Punith M',
-    room: '204B',
-    bed: 'C3',
-    diagnosis: 'Hypertension',
-    spo2: 94,
-    heartRate: 88,
-    temperature: 38.2,
-    data: [
-      { time: '10:00', spo2: 95, heartRate: 85, temperature: 38.1 },
-      { time: '10:10', spo2: 94, heartRate: 88, temperature: 38.2 },
-      { time: '10:20', spo2: 93, heartRate: 90, temperature: 38.3 }
-    ]
-  },
-  '3': {
-    id: '3',
-    name: 'Chidanand T G',
-    room: '105A',
-    bed: 'A1',
-    diagnosis: 'Asthma',
-    spo2: 89,
-    heartRate: 94,
-    temperature: 38.7,
-    data: [
-      { time: '10:00', spo2: 90, heartRate: 92, temperature: 38.6 },
-      { time: '10:10', spo2: 89, heartRate: 94, temperature: 38.7 },
-      { time: '10:20', spo2: 88, heartRate: 95, temperature: 39.0 }
-    ]
-  },
-  '4': {
-    id: '4',
-    name: 'Shashank K S',
-    room: '105B',
-    bed: 'A1',
-    diagnosis: 'Headache',
-    spo2: 89,
-    heartRate: 94,
-    temperature: 38.7,
-    data: [
-      { time: '10:00', spo2: 90, heartRate: 92, temperature: 38.6 },
-      { time: '10:10', spo2: 89, heartRate: 94, temperature: 38.7 },
-      { time: '10:20', spo2: 88, heartRate: 95, temperature: 39.0 }
-    ]
-  },
-};
+const [patientsData, setPatientsData] = useState({});
+useEffect(() => {
+  const fetchData = async () => {
+    try {
+      const response = await fetch('https://hospital-esp-backend.onrender.com/api/sensordata');
+      const rawData = await response.json();
+
+      const grouped = {};
+      rawData.forEach(entry => {
+        if (!grouped[entry.id]) {
+          grouped[entry.id] = {
+            id: entry.id,
+            name: entry.name || 'Unknown',
+            room: entry.room || 'N/A',
+            bed: entry.bed || 'N/A',
+            diagnosis: entry.diagnosis || 'N/A',
+            spo2: entry.spo2,
+            heartRate: entry.heartRate,
+            temperature: entry.temperature,
+            data: []
+          };
+        }
+        grouped[entry.id].data.push({
+          time: entry.time || new Date().toLocaleTimeString(),
+          spo2: entry.spo2,
+          heartRate: entry.heartRate,
+          temperature: entry.temperature
+        });
+      });
+
+      setPatientsData(grouped);
+    } catch (error) {
+      console.error("Failed to fetch data:", error);
+    }
+  };
+
+  fetchData(); // initial fetch
+  const interval = setInterval(fetchData, 5000); // refresh every 5 seconds
+  return () => clearInterval(interval);
+}, []);
+
 
 const getVitalColor = (type, value) => {
   switch (type) {
