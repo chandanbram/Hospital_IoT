@@ -1,11 +1,21 @@
+/* Global Reset and Scroll Settings */
+html, body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  overflow: hidden; /* Prevent full-page scroll, allow internal scrolling */
+  font-family: 'Segoe UI', sans-serif;
+  background-color: #f6f8fc;
+}
+
+/* Layout */
 .dashboard-container {
   display: flex;
   flex-direction: row;
-  min-height: 100vh;
+  height: 100vh;          /* Full viewport height */
   width: 100%;
-  font-family: 'Segoe UI', sans-serif;
-  background-color: #f6f8fc;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;      /* Prevent sidebar/content from stacking */
+  overflow: hidden;       /* Prevent double scrollbars */
 }
 
 /* Sidebar */
@@ -53,8 +63,9 @@
 /* Main Content */
 .dashboard-content {
   flex: 1;
+  height: 100vh;          /* Fills remaining height */
   padding: 3vh 3vw;
-  overflow-y: auto;
+  overflow-y: auto;       /* ✅ Enables vertical scrolling */
   background-color: #f9fbfe;
   box-sizing: border-box;
 }
@@ -79,14 +90,14 @@
 }
 
 .toggle-switch.on {
-  background-color: #28a745; /* Green */
+  background-color: #28a745;
 }
 
 .toggle-switch.off {
-  background-color: #d9534f; /* Red */
+  background-color: #d9534f;
 }
 
-/* Button Group (for reducing padding between buttons) */
+/* Button Group */
 .button-group {
   display: flex;
   gap: 0.5vw;
@@ -113,6 +124,7 @@
   margin: 0 auto;
   object-fit: contain;
 }
+
 /* Debug Tools Section */
 .debug-section {
   background-color: white;
@@ -176,7 +188,7 @@
   font-size: 15px;
 }
 
-/* Responsive Media Queries */
+/* Responsive Design */
 @media (max-width: 1024px) {
   .sidebar {
     width: 22vw;
