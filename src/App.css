@@ -15,33 +15,34 @@ body, html {
   display: flex;
   justify-content: center;
   align-items: center;
-  background: transparent;
+  padding: 40px 0;
+  box-sizing: border-box;
 }
 
 .login-wrapper {
   width: 98%;
   max-width: 960px;
-  height: 90vh;
-  border-radius: 24px;
+  max-height: calc(100vh - 80px);
+  height: 100%;
   display: flex;
   flex-direction: row;
+  border-radius: 24px;
   box-shadow: 0 30px 80px rgba(0, 0, 0, 0.15);
   overflow: hidden;
   backdrop-filter: blur(6px);
   background: rgba(255, 255, 255, 0.7);
 }
 
-/* Left Panel */
 .left-pane {
-  width: 50%;
+  flex: 1;
   background: linear-gradient(135deg, #091636, #111a70);
   color: white;
   padding: 35px 30px;
   display: flex;
   flex-direction: column;
-  justify-content: flex-start;
+  justify-content: space-between;
   align-items: center;
-  position: relative;
+  box-sizing: border-box;
   overflow: hidden;
 }
 
@@ -52,7 +53,7 @@ body, html {
   margin-bottom: 10px;
   text-align: center;
   width: 100%;
-  color: #f4c430; /* Updated primary text color */
+  color: #f4c430;
   text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.3);
 }
 
@@ -66,8 +67,8 @@ body, html {
 }
 
 .feature-ticker {
-  height: 400px;
-  margin-left: -60px;
+  flex: 1;
+  width: 100%;
   overflow: hidden;
   position: relative;
 }
@@ -90,45 +91,45 @@ body, html {
 
 .feature-ticker li::before {
   content: "➤";
-  color: #f4c430; /* Golden arrow for premium feel */
+  color: #f4c430;
   font-size: 16px;
 }
 
 @keyframes scrollUpLoop {
   0% { transform: translateY(0); }
-  100% { transform: translateY(-50%); } /* Only scroll half, since we duplicated */
+  100% { transform: translateY(-50%); }
 }
 
-
-/* Right Panel */
 .right-pane {
-  width: 50%;
+  flex: 1;
   background: #f4f9ff;
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: flex-start;
-  padding: 10px;
+  justify-content: center;
+  padding: 30px;
+  box-sizing: border-box;
 }
 
 .cbr-logo {
   max-width: 250px;
-  margin-top: 5px;
-  margin-bottom: 10px;
-  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
+  width: 100%;
+  height: auto;
+  margin-bottom: 20px;
+  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));
 }
 
-/* Login Card */
 .login-card {
   width: 100%;
   max-width: 320px;
-  padding: 25px 25px;
+  padding: 30px 28px;
   background: rgba(255, 255, 255, 0.85);
   border-radius: 20px;
   box-shadow: 0 18px 38px rgba(0, 0, 0, 0.1);
   backdrop-filter: blur(5px);
   text-align: left;
   transition: all 0.3s ease;
+  box-sizing: border-box;
 }
 
 .login-card h2 {
@@ -139,7 +140,6 @@ body, html {
   text-align: center;
 }
 
-/* Inputs */
 .input-field {
   padding: 12px 20px;
   margin: 12px 0;
@@ -158,9 +158,8 @@ body, html {
   box-shadow: 0 0 10px rgba(0, 114, 255, 0.25);
 }
 
-/* Button */
 .login-btn {
-  margin-top: 10px;
+  margin-top: 20px;
   padding: 14px;
   font-size: 18px;
   font-weight: 600;
@@ -178,7 +177,6 @@ body, html {
   transform: scale(1.03);
 }
 
-/* ✅ Plain red text error message */
 .login-card p {
   color: red;
   font-size: 14px;
@@ -186,7 +184,6 @@ body, html {
   text-align: center;
 }
 
-/* Responsive */
 @media (max-width: 768px) {
   .login-wrapper {
     flex-direction: column;
