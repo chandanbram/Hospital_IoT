@@ -8,10 +8,11 @@ export default function NurseDashboard() {
   const [patientsData, setPatientsData] = useState({});
   const [patientId, setPatientId] = useState('');
   const [selectedPatient, setSelectedPatient] = useState(null);
-  const [alerts, setAlerts] = useState([]);
-  const previousAlertCount = useRef(0); // 🧠 Used to track last alert length
+  const [latestAlert, setLatestAlert] = useState(null);
+  const [showPopup, setShowPopup] = useState(false);
+  const previousAlertRef = useRef(null);
 
-  // Fetch sensor data every second
+  // Fetch sensor data
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -59,35 +60,35 @@ export default function NurseDashboard() {
     return () => clearInterval(interval);
   }, []);
 
-  // Fetch alerts every 3 seconds with sound and flash
+  // Fetch latest alert every 3 seconds
   useEffect(() => {
-    const fetchAlerts = async () => {
+    const fetchLatestAlert = async () => {
       try {
         const response = await fetch('https://hospital-esp-backend.onrender.com/api/alerts');
         const alertData = await response.json();
-        const newAlerts = alertData.slice(-10).reverse();
 
-        // 🔔 Alert trigger logic
-        if (newAlerts.length > previousAlertCount.current) {
-          const audio = new Audio('/alert.mp3');
-          audio.play().catch(err => console.error("Audio Error:", err));
+        if (alertData && alertData.length > 0) {
+          const latest = alertData[alertData.length - 1];
 
-          const alertBox = document.querySelector('.alert-section');
-          if (alertBox) {
-            alertBox.classList.add('flash');
-            setTimeout(() => alertBox.classList.remove('flash'), 1000);
+          // Trigger only if it's a new alert
+          if (!previousAlertRef.current || previousAlertRef.current.time !== latest.time) {
+            setLatestAlert(latest);
+            setShowPopup(true);
+            previousAlertRef.current = latest;
+
+            const audio = new Audio('/alert.mp3');
+            audio.play().catch(err => console.error("Audio Error:", err));
+
+            setTimeout(() => setShowPopup(false), 5000);
           }
         }
-
-        setAlerts(newAlerts);
-        previousAlertCount.current = newAlerts.length;
       } catch (error) {
         console.error("Failed to fetch alerts:", error);
       }
     };
 
-    fetchAlerts();
-    const interval = setInterval(fetchAlerts, 3000);
+    fetchLatestAlert();
+    const interval = setInterval(fetchLatestAlert, 3000);
     return () => clearInterval(interval);
   }, []);
 
@@ -146,6 +147,13 @@ export default function NurseDashboard() {
 
   return (
     <div className="dashboard-container">
+      {showPopup && latestAlert && (
+        <div className="popup-alert">
+          🚨 Alert!<br />
+          {latestAlert.name} ({latestAlert.id}) in Room {latestAlert.room}, Bed {latestAlert.bed} is seeking attention.
+        </div>
+      )}
+
       <aside className="sidebar">
         <div className="logo-container">
           <img src="/logo.png" alt="CBR CareNet Logo" className="logo-img" />
@@ -170,21 +178,6 @@ export default function NurseDashboard() {
           />
           <button onClick={handleSearch}>Search</button>
         </div>
-
-        {/* 🚨 Emergency Alerts */}
-        {alerts.length > 0 && (
-          <div className="alert-section">
-            <h3>🚨 Emergency Alerts</h3>
-            <ul className="alert-list">
-              {alerts.map((a, idx) => (
-                <li key={idx} className="alert-item">
-                  <strong>{a.id}</strong> - Room <strong>{a.room}</strong>, Bed <strong>{a.bed}</strong><br />
-                  <span className="alert-msg">{a.alert}</span> @ <em>{a.time}</em>
-                </li>
-              ))}
-            </ul>
-          </div>
-        )}
 
         {!selectedPatient ? (
           <>
