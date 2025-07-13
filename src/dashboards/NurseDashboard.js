@@ -144,15 +144,18 @@ export default function NurseDashboard() {
     </ResponsiveContainer>
   );
 
-  return (
+ return (
+  <div className="dashboard-container">
     {showPopup && latestAlert && (
-        <div className="popup-alert flash-border">
-          Alert!<br />
-          {latestAlert.name || 'Unknown'} ({latestAlert.id})<br />
-          Room {latestAlert.room}, Bed {latestAlert.bed}<br />
-          {latestAlert.message || 'needs attention'}
-        </div>
-      )}
+      <div className="popup-alert">
+        <button className="dismiss-btn" onClick={() => setShowPopup(false)}>❌</button>
+        🚨 <strong>Alert!</strong><br />
+        <strong>{latestAlert.name || 'Unknown'}</strong> (<strong>{latestAlert.id}</strong>)<br />
+        Room <strong>{latestAlert.room}</strong>, Bed <strong>{latestAlert.bed}</strong><br />
+        {latestAlert.message || 'Needs attention'}
+      </div>
+    )}
+
 
 
       <aside className="sidebar">
