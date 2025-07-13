@@ -12,7 +12,7 @@ export default function NurseDashboard() {
   const [showPopup, setShowPopup] = useState(false);
   const previousAlertRef = useRef(null);
 
-  // Fetch sensor data
+  // Fetch patient sensor data
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -60,7 +60,7 @@ export default function NurseDashboard() {
     return () => clearInterval(interval);
   }, []);
 
-  // Fetch latest alert every 3 seconds
+  // Fetch latest alert
   useEffect(() => {
     const fetchLatestAlert = async () => {
       try {
@@ -70,7 +70,6 @@ export default function NurseDashboard() {
         if (alertData && alertData.length > 0) {
           const latest = alertData[alertData.length - 1];
 
-          // Trigger only if it's a new alert
           if (!previousAlertRef.current || previousAlertRef.current.time !== latest.time) {
             setLatestAlert(latest);
             setShowPopup(true);
@@ -149,8 +148,8 @@ export default function NurseDashboard() {
     <div className="dashboard-container">
       {showPopup && latestAlert && (
         <div className="popup-alert">
-          🚨 Alert!<br />
-          {latestAlert.name} ({latestAlert.id}) in Room {latestAlert.room}, Bed {latestAlert.bed} is seeking attention.
+          🚨 Alert! <br />
+          <strong>{latestAlert.name}</strong> ({latestAlert.id}) in Room <strong>{latestAlert.room}</strong>, Bed <strong>{latestAlert.bed}</strong> is seeking attention.
         </div>
       )}
 
