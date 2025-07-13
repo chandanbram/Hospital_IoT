@@ -275,7 +275,7 @@ button:hover {
   position: fixed;
   top: 20px;
   right: 20px;
-  background: #ffe5e5; /* light red background */
+  background: #ffe5e5;
   color: #b71c1c;
   padding: 16px 24px;
   border: 2px solid #b71c1c;
@@ -292,6 +292,24 @@ button:hover {
   0%   { border-color: #b71c1c; box-shadow: 0 0 10px #b71c1c; }
   100% { border-color: #f44336; box-shadow: 0 0 20px #f44336; }
 }
+
+.popup-alert .dismiss-btn {
+  position: absolute;
+  top: 6px;
+  right: 8px;
+  background: none;
+  border: none;
+  font-size: 1.2rem;
+  color: #b71c1c;
+  cursor: pointer;
+  font-weight: bold;
+  transition: color 0.3s ease;
+}
+
+.popup-alert .dismiss-btn:hover {
+  color: #ff0000;
+}
+
 
 /* Responsive Tweaks */
 @media (max-width: 768px) {
