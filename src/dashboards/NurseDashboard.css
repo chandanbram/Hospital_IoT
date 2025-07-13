@@ -254,6 +254,8 @@ button:hover {
   background-color: #ffe6e6;
   color: #f44336;
 }
+
+/* Logo */
 .logo-container {
   text-align: center;
   margin-top: 3vh;
@@ -266,6 +268,28 @@ button:hover {
   display: block;
   margin: 0 auto;
   object-fit: contain;
+}
+
+/* Popup Alert */
+.popup-alert {
+  background-color: #e53935;
+  color: white;
+  padding: 12px 24px;
+  border-radius: 8px;
+  position: fixed;
+  top: 20px;
+  right: 30px;
+  z-index: 9999;
+  font-weight: bold;
+  box-shadow: 0 0 15px rgba(0, 0, 0, 0.25);
+  animation: fadeInOut 5s ease-out forwards;
+}
+
+@keyframes fadeInOut {
+  0% { opacity: 0; transform: translateY(-10px); }
+  10% { opacity: 1; transform: translateY(0); }
+  90% { opacity: 1; }
+  100% { opacity: 0; transform: translateY(-10px); }
 }
 
 /* Responsive Tweaks */
@@ -297,25 +321,11 @@ button:hover {
   .table-container h3 {
     font-size: 16px;
   }
-}
-.alert-section {
-  background-color: #fff2f2;
-  border-left: 5px solid #e53935;
-  padding: 16px;
-  margin-bottom: 20px;
-  border-radius: 8px;
-}
 
-.alert-list {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-}
-
-.alert-item {
-  margin: 8px 0;
-  padding: 8px;
-  background: #ffe6e6;
-  border-radius: 6px;
-  border-left: 3px solid #d32f2f;
+  .popup-alert {
+    font-size: 14px;
+    top: 10px;
+    right: 10px;
+    padding: 10px 16px;
+  }
 }
