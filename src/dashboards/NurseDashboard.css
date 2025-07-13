@@ -273,19 +273,23 @@ button:hover {
 /* Emergency Popup Alert */
 .popup-alert {
   position: fixed;
-  top: 20px;
-  right: 20px;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
   background: #ffe5e5;
   color: #b71c1c;
-  padding: 16px 24px;
-  border: 2px solid #b71c1c;
-  border-radius: 12px;
+  padding: 24px 32px;
+  border: 3px solid #b71c1c;
+  border-radius: 16px;
   font-size: 1.05vw;
-  font-weight: bold;
-  box-shadow: 0 0 20px rgba(183, 28, 28, 0.4);
+  font-weight: 600;
+  box-shadow: 0 0 25px rgba(183, 28, 28, 0.6);
   animation: borderBlink 1s infinite alternate;
-  line-height: 1.6;
+  line-height: 1.8;
   z-index: 9999;
+  text-align: center;
+  min-width: 300px;
+  max-width: 90vw;
 }
 
 @keyframes borderBlink {
@@ -293,21 +297,21 @@ button:hover {
   100% { border-color: #f44336; box-shadow: 0 0 20px #f44336; }
 }
 
-.popup-alert .dismiss-btn {
+.dismiss-btn {
   position: absolute;
-  top: 6px;
-  right: 8px;
-  background: none;
+  top: 8px;
+  right: 12px;
+  background: transparent;
   border: none;
   font-size: 1.2rem;
   color: #b71c1c;
   cursor: pointer;
   font-weight: bold;
-  transition: color 0.3s ease;
 }
 
-.popup-alert .dismiss-btn:hover {
-  color: #ff0000;
+.dismiss-btn:hover {
+  color: #f44336;
+  transform: scale(1.1);
 }
 
 
