@@ -271,6 +271,27 @@ button:hover {
 }
 
 /* Popup Alert */
+.popup-alert {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  background: #fff2f2;
+  color: #b71c1c;
+  padding: 16px 24px;
+  border: 2px solid red;
+  border-radius: 10px;
+  font-size: 1rem;
+  font-weight: bold;
+  box-shadow: 0 0 20px red;
+  animation: blink 1s infinite;
+  z-index: 9999;
+}
+
+@keyframes blink {
+  0% { border-color: red; box-shadow: 0 0 10px red; }
+  50% { border-color: darkred; box-shadow: 0 0 20px darkred; }
+  100% { border-color: red; box-shadow: 0 0 10px red; }
+}
 
 
 /* Responsive Tweaks */
