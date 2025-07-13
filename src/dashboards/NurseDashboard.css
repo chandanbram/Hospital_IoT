@@ -327,20 +327,21 @@ button:hover {
   position: fixed;
   top: 20px;
   right: 20px;
-  background-color: #fff0f0;
-  border: 3px solid red;
-  padding: 16px 20px;
-  font-size: 1.1rem;
+  background: #fff2f2;
+  color: #b71c1c;
+  padding: 16px 24px;
+  border: 2px solid red;
+  border-radius: 10px;
+  font-size: 1rem;
   font-weight: bold;
-  color: #b30000;
+  box-shadow: 0 0 20px red;
+  animation: blink 1s infinite;
   z-index: 9999;
-  border-radius: 12px;
-  animation: blink-red 1s infinite;
-  box-shadow: 0 0 15px rgba(255, 0, 0, 0.3);
 }
 
-@keyframes blink-red {
-  0% { border-color: red; box-shadow: 0 0 15px rgba(255, 0, 0, 0.3); }
-  50% { border-color: #fff0f0; box-shadow: 0 0 15px rgba(255, 0, 0, 0); }
-  100% { border-color: red; box-shadow: 0 0 15px rgba(255, 0, 0, 0.3); }
+@keyframes blink {
+  0% { border-color: red; box-shadow: 0 0 10px red; }
+  50% { border-color: darkred; box-shadow: 0 0 20px darkred; }
+  100% { border-color: red; box-shadow: 0 0 10px red; }
 }
+
