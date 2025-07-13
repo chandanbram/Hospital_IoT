@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import './NurseDashboard.css';
 import {
   LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer
@@ -8,6 +8,8 @@ export default function NurseDashboard() {
   const [patientsData, setPatientsData] = useState({});
   const [patientId, setPatientId] = useState('');
   const [selectedPatient, setSelectedPatient] = useState(null);
+  const [alerts, setAlerts] = useState([]);
+  const previousAlertCount = useRef(0); // 🧠 Used to track last alert length
 
   // Fetch sensor data every second
   useEffect(() => {
@@ -18,7 +20,7 @@ export default function NurseDashboard() {
 
         const grouped = {};
         rawData.forEach(entry => {
-          const tempF = +(entry.temperature * 9 / 5 + 32).toFixed(1); // convert °C → °F
+          const tempF = +(entry.temperature * 9 / 5 + 32).toFixed(1);
           const spo2 = Math.round(entry.spo2);
           const heartRate = Math.round(entry.heartRate);
 
@@ -43,7 +45,7 @@ export default function NurseDashboard() {
             temperature: tempF
           });
 
-          grouped[entry.id].data = grouped[entry.id].data.slice(-10); // last 10 only
+          grouped[entry.id].data = grouped[entry.id].data.slice(-10);
         });
 
         setPatientsData(grouped);
@@ -53,11 +55,42 @@ export default function NurseDashboard() {
     };
 
     fetchData();
-    const interval = setInterval(fetchData, 1000); // every second
+    const interval = setInterval(fetchData, 1000);
     return () => clearInterval(interval);
   }, []);
 
-  // Update selected patient when data or ID changes
+  // Fetch alerts every 3 seconds with sound and flash
+  useEffect(() => {
+    const fetchAlerts = async () => {
+      try {
+        const response = await fetch('https://hospital-esp-backend.onrender.com/api/alerts');
+        const alertData = await response.json();
+        const newAlerts = alertData.slice(-10).reverse();
+
+        // 🔔 Alert trigger logic
+        if (newAlerts.length > previousAlertCount.current) {
+          const audio = new Audio('/alert.mp3');
+          audio.play().catch(err => console.error("Audio Error:", err));
+
+          const alertBox = document.querySelector('.alert-section');
+          if (alertBox) {
+            alertBox.classList.add('flash');
+            setTimeout(() => alertBox.classList.remove('flash'), 1000);
+          }
+        }
+
+        setAlerts(newAlerts);
+        previousAlertCount.current = newAlerts.length;
+      } catch (error) {
+        console.error("Failed to fetch alerts:", error);
+      }
+    };
+
+    fetchAlerts();
+    const interval = setInterval(fetchAlerts, 3000);
+    return () => clearInterval(interval);
+  }, []);
+
   useEffect(() => {
     if (patientId && patientsData[patientId]) {
       setSelectedPatient({ ...patientsData[patientId] });
@@ -77,7 +110,7 @@ export default function NurseDashboard() {
         if ((value >= 50 && value < 60) || (value > 100 && value <= 110)) return 'orange';
         return 'red';
       case 'temperature':
-        if (value >= 97.7 && value <= 99.5) return 'green'; // °F normal range
+        if (value >= 97.7 && value <= 99.5) return 'green';
         if ((value >= 96.8 && value < 97.7) || (value > 99.5 && value <= 101.3)) return 'orange';
         return 'red';
       default:
@@ -138,6 +171,21 @@ export default function NurseDashboard() {
           <button onClick={handleSearch}>Search</button>
         </div>
 
+        {/* 🚨 Emergency Alerts */}
+        {alerts.length > 0 && (
+          <div className="alert-section">
+            <h3>🚨 Emergency Alerts</h3>
+            <ul className="alert-list">
+              {alerts.map((a, idx) => (
+                <li key={idx} className="alert-item">
+                  <strong>{a.id}</strong> - Room <strong>{a.room}</strong>, Bed <strong>{a.bed}</strong><br />
+                  <span className="alert-msg">{a.alert}</span> @ <em>{a.time}</em>
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
+
         {!selectedPatient ? (
           <>
             <div className="profile-card">
@@ -159,19 +207,11 @@ export default function NurseDashboard() {
                 <h3>Recent Patients</h3>
                 <table>
                   <thead>
-                    <tr>
-                      <th>Patient</th>
-                      <th>Room</th>
-                      <th>Last Visit</th>
-                    </tr>
+                    <tr><th>Patient</th><th>Room</th><th>Last Visit</th></tr>
                   </thead>
                   <tbody>
                     {Object.values(patientsData).map((p) => (
-                      <tr
-                        key={p.id}
-                        onClick={() => handleRecentClick(p.id)}
-                        style={{ cursor: 'pointer' }}
-                      >
+                      <tr key={p.id} onClick={() => handleRecentClick(p.id)} style={{ cursor: 'pointer' }}>
                         <td>{p.name}</td>
                         <td>{p.room}</td>
                         <td>{new Date().toLocaleDateString()}</td>
