@@ -145,13 +145,15 @@ export default function NurseDashboard() {
   );
 
   return (
-    <div className="dashboard-container">
-      {showPopup && latestAlert && (
-        <div className="popup-alert">
-          🚨 Alert! <br />
-          <strong>{latestAlert.name}</strong> ({latestAlert.id}) in Room <strong>{latestAlert.room}</strong>, Bed <strong>{latestAlert.bed}</strong> is seeking attention.
+    {showPopup && latestAlert && (
+        <div className="popup-alert flash-border">
+          Alert!<br />
+          {latestAlert.name || 'Unknown'} ({latestAlert.id})<br />
+          Room {latestAlert.room}, Bed {latestAlert.bed}<br />
+          {latestAlert.message || 'needs attention'}
         </div>
       )}
+
 
       <aside className="sidebar">
         <div className="logo-container">
