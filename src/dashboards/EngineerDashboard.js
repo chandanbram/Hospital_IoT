@@ -15,7 +15,7 @@ function EngineerDashboard() {
 
   const handleStartTraining = async () => {
     try {
-      const response = await fetch('https://calculators-presented-jackson-coaching.trycloudflare.com', {
+      const response = await fetch('https://calm-written-revenge-stanford.trycloudflare.com', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
