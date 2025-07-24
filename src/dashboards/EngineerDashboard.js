@@ -15,7 +15,7 @@ function EngineerDashboard() {
 
   const handleStartTraining = async () => {
     try {
-      const response = await fetch('https://tier-query-ruled-rep.trycloudflare.com', {
+      const response = await fetch('https://tri-interpreted-less-exp.trycloudflare.com', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
