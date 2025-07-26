@@ -6,16 +6,20 @@ function EngineerDashboard() {
   const [homomorphicEnabled, setHomomorphicEnabled] = useState(true);
   const [dpEnabled, setDpEnabled] = useState(false);
   const [accessLoggingEnabled, setAccessLoggingEnabled] = useState(true);
-  const [keyRotationScheduled, setKeyRotationScheduled] = useState(true);
+  const [keyRotationStatus, setKeyRotationStatus] = useState("Not Triggered"); // NEW: State for key rotation status
   const [trainingEpochs, setTrainingEpochs] = useState(5);
   const [batchSize, setBatchSize] = useState(32);
   const [selectedModelVersion, setSelectedModelVersion] = useState("v1.2.3");
   const [syncStatus, setSyncStatus] = useState("Last Sync: 9:05 AM · 92% Nodes Updated");
   const [performance, setPerformance] = useState("Accuracy: 94.3% | Loss: 0.12");
 
+  // --- Aggregator Base URL (Adjust as needed for your Pi's IP) ---
+  const AGGREGATOR_BASE_URL = 'http://192.168.0.104:5001'; 
+  // const AGGREGATOR_BASE_URL = 'https://inside-miss-elsewhere-leg.trycloudflare.com'; // Use this if your Cloudflare tunnel is configured correctly
+
   const handleStartTraining = async () => {
     try {
-      const response = await fetch('https://inside-miss-elsewhere-leg.trycloudflare.com/api/start_training', {
+      const response = await fetch(`${AGGREGATOR_BASE_URL}/api/start_training`, { // Corrected URL
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -29,6 +33,25 @@ function EngineerDashboard() {
     } catch (error) {
       console.error(error);
       alert("⚠️ Failed to start training.");
+    }
+  };
+
+  // NEW: Function to trigger key rotation
+  const handleKeyRotation = async () => {
+    setKeyRotationStatus("Triggering..."); // Update status while sending
+    try {
+      const response = await fetch(`${AGGREGATOR_BASE_URL}/api/rotate_keys`, { // New endpoint for key rotation
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' }
+        // No body needed for a simple trigger
+      });
+      const result = await response.json();
+      alert(`🔑 Key Rotation Triggered: ${result.status || 'Sent'}`);
+      setKeyRotationStatus("Triggered Successfully"); // Update on success
+    } catch (error) {
+      console.error(error);
+      alert("⚠️ Failed to trigger key rotation.");
+      setKeyRotationStatus("Failed to Trigger"); // Update on failure
     }
   };
 
@@ -54,6 +77,8 @@ function EngineerDashboard() {
           <h3>Rotating Encryption Keys</h3>
           <div className="rotation-keys">AES-256 → AES-GCM → RSA-2048 → ECC-P521</div>
           <p>Last rotated: 08:20 AM · Next scheduled: 08:20 PM</p>
+          {/* Add a button to trigger key rotation */}
+          <button onClick={handleKeyRotation} className="debug-btn">Trigger Key Rotation Now</button>
         </div>
 
         <div className="panel-card">
@@ -121,11 +146,12 @@ function EngineerDashboard() {
             <td><button className="toggle-btn" onClick={() => setAccessLoggingEnabled(p => !p)}>{accessLoggingEnabled ? 'Disable' : 'Enable'}</button></td>
           </tr>
 
+          {/* MODIFIED: Auto Key Rotation */}
           <tr>
-            <td>Auto Key Rotation</td>
-            <td>Rotate keys periodically <br /><input type="time" defaultValue="08:00" /></td>
-            <td><span className="status" style={{ backgroundColor: '#ffe6e6', color: '#d9534f' }}>Unscheduled</span></td>
-            <td><button className="toggle-btn">Schedule</button></td>
+            <td>Manual Key Rotation</td>
+            <td>Trigger an immediate key rotation for all devices.</td>
+            <td><span className="status" style={{ backgroundColor: keyRotationStatus === "Triggered Successfully" ? '#e0f9e8' : (keyRotationStatus === "Failed to Trigger" ? '#ffe6e6' : '#fff3cd'), color: keyRotationStatus === "Triggered Successfully" ? '#28a745' : (keyRotationStatus === "Failed to Trigger" ? '#d9534f' : '#856404') }}>{keyRotationStatus}</span></td>
+            <td><button className="toggle-btn" onClick={handleKeyRotation}>Rotate Keys Now</button></td>
           </tr>
         </tbody>
       </table>
@@ -220,7 +246,7 @@ function EngineerDashboard() {
     <div className="dashboard-container">
       <aside className="sidebar">
         <div className="logo-container">
-          <img src="/logo.png" alt="CBR CareNet Logo" className="logo-img" />
+          {/* <img src="/logo.png" alt="CBR CareNet Logo" className="logo-img" /> */}
         </div>
         <ul>
           <li onClick={() => setActiveSection('Dashboard')}>Dashboard</li>
