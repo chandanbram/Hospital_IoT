@@ -15,7 +15,7 @@ function EngineerDashboard() {
 
   const handleStartTraining = async () => {
     try {
-      const response = await fetch('http://192.168.137.20:5001/api/start_training', {
+      const response = await fetch('https://inside-miss-elsewhere-leg.trycloudflare.com/api/start_training', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
