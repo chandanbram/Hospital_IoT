@@ -15,7 +15,7 @@ function EngineerDashboard() {
 
   const handleStartTraining = async () => {
     try {
-      const response = await fetch('https://aerospace-bunny-putting-salaries.trycloudflare.com', {
+      const response = await fetch('https://inside-miss-elsewhere-leg.trycloudflare.com', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
