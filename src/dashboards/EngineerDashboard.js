@@ -16,56 +16,25 @@ function EngineerDashboard() {
 
   const AGGREGATOR_BASE_URL = 'https://northeast-blond-sofa-controlled.trycloudflare.com';
 
-  useEffect(() => {
-    const interval = setInterval(async () => {
-      try {
-        const response = await fetch(`${AGGREGATOR_BASE_URL}/api/global_model`);
-        if (!response.ok) throw new Error('Model not ready');
-        const modelData = await response.json();
-        setPerformance(`Accuracy: ${(modelData.avg_accuracy * 100).toFixed(2)}% | Loss: ${modelData.avg_loss.toFixed(4)}`);
-        setSelectedModelVersion(`v${modelData.version}`);
-      } catch (err) {
-        console.warn('Polling: Global model not ready yet.');
-      }
-    }, 5000); // every 5 seconds
+ const handleStartTraining = async () => {
+  setTrainingInProgress(true);
+  try {
+    const response = await fetch(`${AGGREGATOR_BASE_URL}/api/start_training`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' }
+    });
+    const result = await response.json();
+    console.log("Training triggered:", result);
+    alert("✅ Training trigger sent to backend.");
 
-    return () => clearInterval(interval);
-  }, []);
+  } catch (error) {
+    console.error("❌ Training trigger failed:", error);
+    alert("⚠️ Failed to start training.");
+  } finally {
+    setTrainingInProgress(false);
+  }
+};
 
-  const handleStartTraining = async () => {
-    setTrainingInProgress(true);
-    try {
-      const response = await fetch(`${AGGREGATOR_BASE_URL}/api/start_training`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' }
-      });
-      const result = await response.json();
-      console.log("Training triggered:", result);
-
-      setTimeout(async () => {
-        try {
-          const modelResp = await fetch(`${AGGREGATOR_BASE_URL}/api/global_model`);
-          const modelData = await modelResp.json();
-
-          console.log("Global Model:", modelData);
-
-          setPerformance(`Accuracy: ${(modelData.avg_accuracy * 100).toFixed(2)}% | Loss: ${modelData.avg_loss.toFixed(4)}`);
-          setSelectedModelVersion(`v${modelData.version}`);
-
-          alert(`✅ Training Complete!\nVersion: v${modelData.version}\nAccuracy: ${(modelData.avg_accuracy * 100).toFixed(2)}%\nLoss: ${modelData.avg_loss.toFixed(4)}`);
-        } catch (modelErr) {
-          console.error("❌ Error fetching global model:", modelErr);
-          alert("⚠️ Training triggered, but failed to fetch global model.");
-        } finally {
-          setTrainingInProgress(false);
-        }
-      }, 20000);
-    } catch (error) {
-      console.error("❌ Training trigger failed:", error);
-      alert("⚠️ Failed to start training.");
-      setTrainingInProgress(false);
-    }
-  };
 
   const handleKeyRotation = async () => {
     setKeyRotationStatus("Triggering...");
@@ -84,43 +53,47 @@ function EngineerDashboard() {
     }
   };
 
-  const renderModelInsights = () => (
-    <div className="panel-card">
-      <h3>Federated Learning / AI Controls</h3>
-      <table>
-        <thead><tr><th>Feature</th><th>Controls</th></tr></thead>
-        <tbody>
-          <tr>
-            <td>Model Version</td>
-            <td>
-              <select value={selectedModelVersion} onChange={e => setSelectedModelVersion(e.target.value)}>
-                <option>{selectedModelVersion}</option>
-                <option>v1.1.5</option>
-              </select>
-            </td>
-          </tr>
-          <tr>
-            <td>Training Config</td>
-            <td>
-              Epochs: <input type="number" value={trainingEpochs} onChange={e => setTrainingEpochs(e.target.value)} style={{ width: '50px' }} />
-              {" "} | Batch Size: <input type="number" value={batchSize} onChange={e => setBatchSize(e.target.value)} style={{ width: '50px' }} />
-            </td>
-          </tr>
-          <tr><td>Sync Status</td><td>{syncStatus}</td></tr>
-          <tr><td>Performance</td><td>{performance}</td></tr>
-          <tr>
-            <td>Trigger Training</td>
-            <td>
-              <button onClick={handleStartTraining} className="debug-btn" disabled={trainingInProgress}>
-                {trainingInProgress ? 'Training in Progress...' : 'Start FL Training'}
-              </button>
-              {trainingInProgress && <span className="spinner" style={{ marginLeft: '10px' }}></span>}
-            </td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-  );
+ const renderModelInsights = () => (
+  <div className="panel-card">
+    <h3>Federated Learning / AI Controls</h3>
+    <table>
+      <thead>
+        <tr><th>Feature</th><th>Details</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Model Version</td>
+          <td>{selectedModelVersion}</td>
+        </tr>
+        <tr>
+          <td>Training Config</td>
+          <td>
+            Epochs: <span style={{ fontWeight: 'bold' }}>{trainingEpochs}</span> |
+            Batch Size: <span style={{ fontWeight: 'bold', marginLeft: '10px' }}>{batchSize}</span>
+          </td>
+        </tr>
+        <tr>
+          <td>Sync Status</td>
+          <td>{syncStatus}</td>
+        </tr>
+        <tr>
+          <td>Performance</td>
+          <td>{performance}</td>
+        </tr>
+        <tr>
+          <td>Trigger Training</td>
+          <td>
+            <button onClick={handleStartTraining} className="debug-btn" disabled={trainingInProgress}>
+              {trainingInProgress ? 'Training in Progress...' : 'Start FL Training'}
+            </button>
+            {trainingInProgress && <span className="spinner" style={{ marginLeft: '10px' }}></span>}
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+);
+
 
   const renderDashboard = () => (
     <>
