@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import './EngineerDashboard.css';
+import axios from 'axios';
 
 function EngineerDashboard() {
   const [activeSection, setActiveSection] = useState('Dashboard');
@@ -14,25 +15,40 @@ function EngineerDashboard() {
 
   const AGGREGATOR_BASE_URL = 'https://northeast-blond-sofa-controlled.trycloudflare.com';
 
- const handleStartTraining = async () => {
-  setTrainingInProgress(true);
-  try {
-    const response = await fetch(`${AGGREGATOR_BASE_URL}/api/start_training`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' }
-    });
-    const result = await response.json();
-    console.log("Training triggered:", result);
-    alert("Success✅ Training triggerd.");
+  useEffect(() => {
+    axios.get(`${AGGREGATOR_BASE_URL}/dp-status`)
+      .then(res => setDpEnabled(res.data.dp_enabled))
+      .catch(err => console.error("Failed to fetch DP status:", err));
+  }, []);
 
-  } catch (error) {
-    console.error("❌ Training trigger failed:", error);
-    alert("⚠️ Failed to start training.");
-  } finally {
-    setTrainingInProgress(false);
-  }
-};
+  const handleDpToggle = () => {
+    const newState = !dpEnabled;
+    setDpEnabled(newState); // optimistic update
+    axios.post(`${AGGREGATOR_BASE_URL}/toggle-dp`, { dp_enabled: newState })
+      .then(res => console.log("DP status updated:", res.data))
+      .catch(err => {
+        console.error("DP toggle failed:", err);
+        setDpEnabled(!newState); // revert on error
+      });
+  };
 
+  const handleStartTraining = async () => {
+    setTrainingInProgress(true);
+    try {
+      const response = await fetch(`${AGGREGATOR_BASE_URL}/api/start_training`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' }
+      });
+      const result = await response.json();
+      console.log("Training triggered:", result);
+      alert("Success✅ Training triggerd.");
+    } catch (error) {
+      console.error("❌ Training trigger failed:", error);
+      alert("⚠️ Failed to start training.");
+    } finally {
+      setTrainingInProgress(false);
+    }
+  };
 
   const handleKeyRotation = async () => {
     setKeyRotationStatus("Triggering...");
@@ -51,41 +67,38 @@ function EngineerDashboard() {
     }
   };
 
- const renderModelInsights = () => (
-  <div className="panel-card">
-    <h3>Federated Learning / AI Controls</h3>
-    <table>
-      <thead>
-        <tr><th>Feature</th><th>Details</th></tr>
-      </thead>
-      <tbody>
-       
-        <tr>
-          <td>Training Config</td>
-          <td>
-            Epochs: <span style={{ fontWeight: 'bold' }}>{trainingEpochs}</span> |
-            Batch Size: <span style={{ fontWeight: 'bold', marginLeft: '10px' }}>{batchSize}</span>
-          </td>
-        </tr>
-       
-        <tr>
-          <td>Performance</td>
-          <td>{performance}</td>
-        </tr>
-        <tr>
-          <td>Trigger Training</td>
-          <td>
-            <button onClick={handleStartTraining} className="debug-btn" disabled={trainingInProgress}>
-              {trainingInProgress ? 'Training in Progress...' : 'Start FL Training'}
-            </button>
-            {trainingInProgress && <span className="spinner" style={{ marginLeft: '10px' }}></span>}
-          </td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
-);
-
+  const renderModelInsights = () => (
+    <div className="panel-card">
+      <h3>Federated Learning / AI Controls</h3>
+      <table>
+        <thead>
+          <tr><th>Feature</th><th>Details</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Training Config</td>
+            <td>
+              Epochs: <span style={{ fontWeight: 'bold' }}>{trainingEpochs}</span> |
+              Batch Size: <span style={{ fontWeight: 'bold', marginLeft: '10px' }}>{batchSize}</span>
+            </td>
+          </tr>
+          <tr>
+            <td>Performance</td>
+            <td>{performance}</td>
+          </tr>
+          <tr>
+            <td>Trigger Training</td>
+            <td>
+              <button onClick={handleStartTraining} className="debug-btn" disabled={trainingInProgress}>
+                {trainingInProgress ? 'Training in Progress...' : 'Start FL Training'}
+              </button>
+              {trainingInProgress && <span className="spinner" style={{ marginLeft: '10px' }}></span>}
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  );
 
   const renderDashboard = () => (
     <>
@@ -167,7 +180,7 @@ function EngineerDashboard() {
             <td>Differential Privacy</td>
             <td>Noise injection for private training</td>
             <td><span className="status" style={{ backgroundColor: dpEnabled ? '#e0f9e8' : '#ffe6e6', color: dpEnabled ? '#28a745' : '#d9534f' }}>{dpEnabled ? 'Enabled' : 'Disabled'}</span></td>
-            <td><button className="toggle-btn" onClick={() => setDpEnabled(p => !p)}>{dpEnabled ? 'Disable' : 'Enable'}</button></td>
+            <td><button className="toggle-btn" onClick={handleDpToggle}>{dpEnabled ? 'Disable' : 'Enable'}</button></td>
           </tr>
 
           <tr>
@@ -205,13 +218,11 @@ function EngineerDashboard() {
   const renderDebugTools = () => (
     <div className="panel-card debug-section">
       <h3>Advanced Debug Tools</h3>
-
       <div className="debug-subsection">
         <h4>Live Console Access</h4>
         <p>Launch a restricted terminal session for on-device debugging.</p>
         <button className="debug-btn">Open Console</button>
       </div>
-
       <div className="debug-subsection">
         <h4>Data Download</h4>
         <p>Export device metrics or logs.</p>
@@ -220,7 +231,6 @@ function EngineerDashboard() {
           <button className="debug-btn">Export JSON</button>
         </div>
       </div>
-
       <div className="debug-subsection">
         <h4>Network Bandwidth Monitor</h4>
         <p>Live bandwidth usage:</p>
@@ -228,23 +238,23 @@ function EngineerDashboard() {
       </div>
     </div>
   );
-const renderSection = () => {
-  switch (activeSection) {
-    case 'Dashboard':
-      return renderDashboard();
-    case 'Model Insights':
-      return renderModelInsights();
-    case 'Security':
-      return renderSecurityPanel();
-    case 'Device Monitoring':
-      return renderDeviceMonitor();  
-    case 'Debug Tools':
-      return renderDebugTools();
-    default:
-      return <div>Select a section</div>;
-  }
-};
 
+  const renderSection = () => {
+    switch (activeSection) {
+      case 'Dashboard':
+        return renderDashboard();
+      case 'Model Insights':
+        return renderModelInsights();
+      case 'Security':
+        return renderSecurityPanel();
+      case 'Device Monitoring':
+        return renderDeviceMonitor();
+      case 'Debug Tools':
+        return renderDebugTools();
+      default:
+        return <div>Select a section</div>;
+    }
+  };
 
   return (
     <div className="dashboard-container">
