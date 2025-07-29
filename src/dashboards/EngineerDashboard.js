@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import './EngineerDashboard.css';
 
 function EngineerDashboard() {
@@ -14,7 +14,23 @@ function EngineerDashboard() {
   const [performance, setPerformance] = useState("Accuracy: 94.3% | Loss: 0.12");
   const [trainingInProgress, setTrainingInProgress] = useState(false);
 
-  const AGGREGATOR_BASE_URL = 'https://northeast-blond-sofa-controlled.trycloudflare.com'; 
+  const AGGREGATOR_BASE_URL = 'https://northeast-blond-sofa-controlled.trycloudflare.com';
+
+  useEffect(() => {
+    const interval = setInterval(async () => {
+      try {
+        const response = await fetch(`${AGGREGATOR_BASE_URL}/api/global_model`);
+        if (!response.ok) throw new Error('Model not ready');
+        const modelData = await response.json();
+        setPerformance(`Accuracy: ${(modelData.avg_accuracy * 100).toFixed(2)}% | Loss: ${modelData.avg_loss.toFixed(4)}`);
+        setSelectedModelVersion(`v${modelData.version}`);
+      } catch (err) {
+        console.warn('Polling: Global model not ready yet.');
+      }
+    }, 5000); // every 5 seconds
+
+    return () => clearInterval(interval);
+  }, []);
 
   const handleStartTraining = async () => {
     setTrainingInProgress(true);
@@ -33,10 +49,10 @@ function EngineerDashboard() {
 
           console.log("Global Model:", modelData);
 
-          setPerformance(`Loss: ${modelData.avg_loss.toFixed(4)}`);
+          setPerformance(`Accuracy: ${(modelData.avg_accuracy * 100).toFixed(2)}% | Loss: ${modelData.avg_loss.toFixed(4)}`);
           setSelectedModelVersion(`v${modelData.version}`);
 
-          alert(`✅ Training Complete!\nVersion: v${modelData.version}\nLoss: ${modelData.avg_loss.toFixed(4)}`);
+          alert(`✅ Training Complete!\nVersion: v${modelData.version}\nAccuracy: ${(modelData.avg_accuracy * 100).toFixed(2)}%\nLoss: ${modelData.avg_loss.toFixed(4)}`);
         } catch (modelErr) {
           console.error("❌ Error fetching global model:", modelErr);
           alert("⚠️ Training triggered, but failed to fetch global model.");
@@ -78,7 +94,7 @@ function EngineerDashboard() {
             <td>Model Version</td>
             <td>
               <select value={selectedModelVersion} onChange={e => setSelectedModelVersion(e.target.value)}>
-                <option>v1.2.3</option>
+                <option>{selectedModelVersion}</option>
                 <option>v1.1.5</option>
               </select>
             </td>
@@ -128,7 +144,6 @@ function EngineerDashboard() {
           <h3>Rotating Encryption Keys</h3>
           <div className="rotation-keys">AES-256 → AES-GCM → RSA-2048 → ECC-P521</div>
           <p>Last rotated: 08:20 AM · Next scheduled: 08:20 PM</p>
-          {/* Add a button to trigger key rotation */}
           <button onClick={handleKeyRotation} className="debug-btn">Trigger Key Rotation Now</button>
         </div>
 
@@ -197,7 +212,6 @@ function EngineerDashboard() {
             <td><button className="toggle-btn" onClick={() => setAccessLoggingEnabled(p => !p)}>{accessLoggingEnabled ? 'Disable' : 'Enable'}</button></td>
           </tr>
 
-          {/* MODIFIED: Auto Key Rotation */}
           <tr>
             <td>Manual Key Rotation</td>
             <td>Trigger an immediate key rotation for all devices.</td>
@@ -208,8 +222,6 @@ function EngineerDashboard() {
       </table>
     </div>
   );
-
- 
 
   const renderDeviceMonitor = () => (
     <div className="panel-card">
@@ -252,17 +264,7 @@ function EngineerDashboard() {
     </div>
   );
 
-  const renderSection = () => {
-    switch (activeSection) {
-      case 'Security': return renderSecurityPanel();
-      case 'Model Insights': return renderModelInsights();
-      case 'Device Monitoring': return renderDeviceMonitor();
-      case 'Debug Tools': return renderDebugTools();
-      default: return renderDashboard();
-    }
-  };
-
- return (
+  return (
     <div className="dashboard-container">
       <aside className="sidebar">
         <div className="logo-container"></div>
@@ -277,15 +279,7 @@ function EngineerDashboard() {
       </aside>
       <main className="dashboard-content">
         <h1>Welcome, Engineer</h1>
-        {(() => {
-          switch (activeSection) {
-            case 'Security': return renderSecurityPanel();
-            case 'Model Insights': return renderModelInsights();
-            case 'Device Monitoring': return renderDeviceMonitor();
-            case 'Debug Tools': return renderDebugTools();
-            default: return renderDashboard();
-          }
-        })()}
+        {renderSection()}
       </main>
     </div>
   );
