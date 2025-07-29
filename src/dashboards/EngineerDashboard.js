@@ -21,16 +21,22 @@ function EngineerDashboard() {
       .catch(err => console.error("Failed to fetch DP status:", err));
   }, []);
 
-  const handleDpToggle = () => {
-    const newState = !dpEnabled;
-    setDpEnabled(newState); // optimistic update
-    axios.post(`${AGGREGATOR_BASE_URL}/toggle-dp`, { dp_enabled: newState })
-      .then(res => console.log("DP status updated:", res.data))
-      .catch(err => {
-        console.error("DP toggle failed:", err);
-        setDpEnabled(!newState); // revert on error
-      });
-  };
+ const handleDpToggle = () => {
+  const newState = !dpEnabled;
+  setDpEnabled(newState); // optimistic UI update
+
+  axios.post(`${AGGREGATOR_BASE_URL}/toggle-dp`, { dp_enabled: newState })
+    .then(res => {
+      console.log("✅ DP status updated:", res.data);
+      alert(`✅ Differential Privacy ${newState ? 'enabled' : 'disabled'} successfully.`);
+    })
+    .catch(err => {
+      console.error("❌ DP toggle failed:", err);
+      alert("❌ Failed to update Differential Privacy setting.");
+      setDpEnabled(!newState); // revert change on error
+    });
+};
+
 
   const handleStartTraining = async () => {
     setTrainingInProgress(true);
