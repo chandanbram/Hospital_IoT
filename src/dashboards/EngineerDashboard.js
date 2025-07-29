@@ -14,7 +14,7 @@ function EngineerDashboard() {
   const [performance, setPerformance] = useState("Accuracy: 94.3% | Loss: 0.12");
 
   // --- Aggregator Base URL (Adjust as needed for your Pi's IP) ---
-  const AGGREGATOR_BASE_URL = ' https://searched-outlet-prompt-smaller.trycloudflare.com'; 
+  const AGGREGATOR_BASE_URL = 'https://northeast-blond-sofa-controlled.trycloudflare.com'; 
   // const AGGREGATOR_BASE_URL = 'https://inside-miss-elsewhere-leg.trycloudflare.com'; // Use this if your Cloudflare tunnel is configured correctly
 
   const handleStartTraining = async () => {
