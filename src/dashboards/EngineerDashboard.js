@@ -6,54 +6,105 @@ function EngineerDashboard() {
   const [homomorphicEnabled, setHomomorphicEnabled] = useState(true);
   const [dpEnabled, setDpEnabled] = useState(false);
   const [accessLoggingEnabled, setAccessLoggingEnabled] = useState(true);
-  const [keyRotationStatus, setKeyRotationStatus] = useState("Not Triggered"); // NEW: State for key rotation status
+  const [keyRotationStatus, setKeyRotationStatus] = useState("Not Triggered");
   const [trainingEpochs, setTrainingEpochs] = useState(5);
   const [batchSize, setBatchSize] = useState(32);
   const [selectedModelVersion, setSelectedModelVersion] = useState("v1.2.3");
   const [syncStatus, setSyncStatus] = useState("Last Sync: 9:05 AM · 92% Nodes Updated");
   const [performance, setPerformance] = useState("Accuracy: 94.3% | Loss: 0.12");
+  const [trainingInProgress, setTrainingInProgress] = useState(false);
 
-  // --- Aggregator Base URL (Adjust as needed for your Pi's IP) ---
   const AGGREGATOR_BASE_URL = 'https://northeast-blond-sofa-controlled.trycloudflare.com'; 
-  // const AGGREGATOR_BASE_URL = 'https://inside-miss-elsewhere-leg.trycloudflare.com'; // Use this if your Cloudflare tunnel is configured correctly
 
   const handleStartTraining = async () => {
+    setTrainingInProgress(true);
     try {
-      const response = await fetch(`${AGGREGATOR_BASE_URL}/api/start_training`, { // Corrected URL
+      const response = await fetch(`${AGGREGATOR_BASE_URL}/api/start_training`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          version: selectedModelVersion,
-          epochs: trainingEpochs,
-          batch_size: batchSize
-        })
+        headers: { 'Content-Type': 'application/json' }
       });
       const result = await response.json();
-      alert(`🚀 Training Triggered: ${result.status || 'Sent'}`);
+      console.log("Training triggered:", result);
+
+      setTimeout(async () => {
+        try {
+          const modelResp = await fetch(`${AGGREGATOR_BASE_URL}/api/global_model`);
+          const modelData = await modelResp.json();
+
+          console.log("Global Model:", modelData);
+
+          setPerformance(`Loss: ${modelData.avg_loss.toFixed(4)}`);
+          setSelectedModelVersion(`v${modelData.version}`);
+
+          alert(`✅ Training Complete!\nVersion: v${modelData.version}\nLoss: ${modelData.avg_loss.toFixed(4)}`);
+        } catch (modelErr) {
+          console.error("❌ Error fetching global model:", modelErr);
+          alert("⚠️ Training triggered, but failed to fetch global model.");
+        } finally {
+          setTrainingInProgress(false);
+        }
+      }, 20000);
     } catch (error) {
-      console.error(error);
+      console.error("❌ Training trigger failed:", error);
       alert("⚠️ Failed to start training.");
+      setTrainingInProgress(false);
     }
   };
 
-  // NEW: Function to trigger key rotation
   const handleKeyRotation = async () => {
-    setKeyRotationStatus("Triggering..."); // Update status while sending
+    setKeyRotationStatus("Triggering...");
     try {
-      const response = await fetch(`${AGGREGATOR_BASE_URL}/api/rotate_keys`, { // New endpoint for key rotation
+      const response = await fetch(`${AGGREGATOR_BASE_URL}/api/rotate_keys`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' }
-        // No body needed for a simple trigger
       });
       const result = await response.json();
       alert(`🔑 Key Rotation Triggered: ${result.status || 'Sent'}`);
-      setKeyRotationStatus("Triggered Successfully"); // Update on success
+      setKeyRotationStatus("Triggered Successfully");
     } catch (error) {
       console.error(error);
       alert("⚠️ Failed to trigger key rotation.");
-      setKeyRotationStatus("Failed to Trigger"); // Update on failure
+      setKeyRotationStatus("Failed to Trigger");
     }
   };
+
+  const renderModelInsights = () => (
+    <div className="panel-card">
+      <h3>Federated Learning / AI Controls</h3>
+      <table>
+        <thead><tr><th>Feature</th><th>Controls</th></tr></thead>
+        <tbody>
+          <tr>
+            <td>Model Version</td>
+            <td>
+              <select value={selectedModelVersion} onChange={e => setSelectedModelVersion(e.target.value)}>
+                <option>v1.2.3</option>
+                <option>v1.1.5</option>
+              </select>
+            </td>
+          </tr>
+          <tr>
+            <td>Training Config</td>
+            <td>
+              Epochs: <input type="number" value={trainingEpochs} onChange={e => setTrainingEpochs(e.target.value)} style={{ width: '50px' }} />
+              {" "} | Batch Size: <input type="number" value={batchSize} onChange={e => setBatchSize(e.target.value)} style={{ width: '50px' }} />
+            </td>
+          </tr>
+          <tr><td>Sync Status</td><td>{syncStatus}</td></tr>
+          <tr><td>Performance</td><td>{performance}</td></tr>
+          <tr>
+            <td>Trigger Training</td>
+            <td>
+              <button onClick={handleStartTraining} className="debug-btn" disabled={trainingInProgress}>
+                {trainingInProgress ? 'Training in Progress...' : 'Start FL Training'}
+              </button>
+              {trainingInProgress && <span className="spinner" style={{ marginLeft: '10px' }}></span>}
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  );
 
   const renderDashboard = () => (
     <>
@@ -158,38 +209,7 @@ function EngineerDashboard() {
     </div>
   );
 
-  const renderModelInsights = () => (
-    <div className="panel-card">
-      <h3>Federated Learning / AI Controls</h3>
-      <table>
-        <thead><tr><th>Feature</th><th>Controls</th></tr></thead>
-        <tbody>
-          <tr>
-            <td>Model Version</td>
-            <td>
-              <select value={selectedModelVersion} onChange={e => setSelectedModelVersion(e.target.value)}>
-                <option>v1.2.3</option>
-                <option>v1.1.5</option>
-              </select>
-            </td>
-          </tr>
-          <tr>
-            <td>Training Config</td>
-            <td>
-              Epochs: <input type="number" value={trainingEpochs} onChange={e => setTrainingEpochs(e.target.value)} style={{ width: '50px' }} />
-              {" "} | Batch Size: <input type="number" value={batchSize} onChange={e => setBatchSize(e.target.value)} style={{ width: '50px' }} />
-            </td>
-          </tr>
-          <tr><td>Sync Status</td><td>{syncStatus}</td></tr>
-          <tr><td>Performance</td><td>{performance}</td></tr>
-          <tr>
-            <td>Trigger Training</td>
-            <td><button onClick={handleStartTraining} className="debug-btn">Start FL Training</button></td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-  );
+ 
 
   const renderDeviceMonitor = () => (
     <div className="panel-card">
@@ -242,12 +262,10 @@ function EngineerDashboard() {
     }
   };
 
-  return (
+ return (
     <div className="dashboard-container">
       <aside className="sidebar">
-        <div className="logo-container">
-          {/* <img src="/logo.png" alt="CBR CareNet Logo" className="logo-img" /> */}
-        </div>
+        <div className="logo-container"></div>
         <ul>
           <li onClick={() => setActiveSection('Dashboard')}>Dashboard</li>
           <li onClick={() => setActiveSection('Model Insights')}>Model Insights</li>
@@ -257,10 +275,17 @@ function EngineerDashboard() {
           <li onClick={() => window.location.href = '/'}>Logout</li>
         </ul>
       </aside>
-
       <main className="dashboard-content">
         <h1>Welcome, Engineer</h1>
-        {renderSection()}
+        {(() => {
+          switch (activeSection) {
+            case 'Security': return renderSecurityPanel();
+            case 'Model Insights': return renderModelInsights();
+            case 'Device Monitoring': return renderDeviceMonitor();
+            case 'Debug Tools': return renderDebugTools();
+            default: return renderDashboard();
+          }
+        })()}
       </main>
     </div>
   );
