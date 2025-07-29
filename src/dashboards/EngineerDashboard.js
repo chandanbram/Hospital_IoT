@@ -7,10 +7,8 @@ function EngineerDashboard() {
   const [dpEnabled, setDpEnabled] = useState(false);
   const [accessLoggingEnabled, setAccessLoggingEnabled] = useState(true);
   const [keyRotationStatus, setKeyRotationStatus] = useState("Not Triggered");
-  const [trainingEpochs, setTrainingEpochs] = useState(5);
+  const [trainingEpochs, setTrainingEpochs] = useState(30);
   const [batchSize, setBatchSize] = useState(32);
-  const [selectedModelVersion, setSelectedModelVersion] = useState("v1.2.3");
-  const [syncStatus, setSyncStatus] = useState("Last Sync: 9:05 AM · 92% Nodes Updated");
   const [performance, setPerformance] = useState("Accuracy: 94.3% | Loss: 0.12");
   const [trainingInProgress, setTrainingInProgress] = useState(false);
 
@@ -25,7 +23,7 @@ function EngineerDashboard() {
     });
     const result = await response.json();
     console.log("Training triggered:", result);
-    alert("✅ Training trigger sent to backend.");
+    alert("Success✅ Training triggerd.");
 
   } catch (error) {
     console.error("❌ Training trigger failed:", error);
@@ -61,10 +59,7 @@ function EngineerDashboard() {
         <tr><th>Feature</th><th>Details</th></tr>
       </thead>
       <tbody>
-        <tr>
-          <td>Model Version</td>
-          <td>{selectedModelVersion}</td>
-        </tr>
+       
         <tr>
           <td>Training Config</td>
           <td>
@@ -72,10 +67,7 @@ function EngineerDashboard() {
             Batch Size: <span style={{ fontWeight: 'bold', marginLeft: '10px' }}>{batchSize}</span>
           </td>
         </tr>
-        <tr>
-          <td>Sync Status</td>
-          <td>{syncStatus}</td>
-        </tr>
+       
         <tr>
           <td>Performance</td>
           <td>{performance}</td>
