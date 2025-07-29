@@ -239,19 +239,20 @@ function EngineerDashboard() {
 const renderSection = () => {
   switch (activeSection) {
     case 'Dashboard':
-      return renderSummaryCards();
+      return renderDashboard();
     case 'Model Insights':
       return renderModelInsights();
     case 'Security':
       return renderSecurityPanel();
     case 'Device Monitoring':
-      return renderDeviceMonitoring();
+      return renderDeviceMonitor();  
     case 'Debug Tools':
       return renderDebugTools();
     default:
       return <div>Select a section</div>;
   }
 };
+
 
   return (
     <div className="dashboard-container">
