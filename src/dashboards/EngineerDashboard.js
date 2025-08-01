@@ -206,7 +206,7 @@ useEffect(() => {
   };
 
   fetchDeviceStatus(); // fetch immediately
-  const interval = setInterval(fetchDeviceStatus, 5000); // update every 5s
+  const interval = setInterval(fetchDeviceStatus, 50000); // update every 5s
   return () => clearInterval(interval);
 }, []);
 
@@ -233,9 +233,13 @@ useEffect(() => {
               </span>
             </td>
             <td>
-              <button onClick={() => alert(`⏳ Restart signal sent to ${dev.id}`)}>
+              <button onClick={() => {
+                handleRestart(dev.id);
+                alert(`⏳ Restart signal sent to ${dev.id}`);
+              }}>
                 Restart
               </button>
+
             </td>
           </tr>
         ))}
