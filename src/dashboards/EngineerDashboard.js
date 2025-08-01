@@ -39,7 +39,7 @@ function EngineerDashboard() {
 const handleRestart = async (deviceId) => {
   try {
     const res = await axios.post(`${AGGREGATOR_BASE_URL}/api/restart_device`, {
-      device_id: deviceId
+      client_id: deviceId
     });
     alert(`✅ Restart signal sent to ${deviceId}`);
     console.log("Restart response:", res.data);
