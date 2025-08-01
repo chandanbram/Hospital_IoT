@@ -175,12 +175,7 @@ function EngineerDashboard() {
           <tr><th>Feature</th><th>Description</th><th>Status</th><th>Action</th></tr>
         </thead>
         <tbody>
-          <tr>
-            <td>Homomorphic Encryption</td>
-            <td>Real-time encrypted computation</td>
-            <td><span className="status" style={{ backgroundColor: homomorphicEnabled ? '#e0f9e8' : '#ffe6e6', color: homomorphicEnabled ? '#28a745' : '#d9534f' }}>{homomorphicEnabled ? 'Enabled' : 'Disabled'}</span></td>
-            <td><button className="toggle-btn" onClick={() => setHomomorphicEnabled(p => !p)}>{homomorphicEnabled ? 'Disable' : 'Enable'}</button></td>
-          </tr>
+         
 
           <tr>
             <td>Differential Privacy</td>
@@ -189,12 +184,7 @@ function EngineerDashboard() {
             <td><button className="toggle-btn" onClick={handleDpToggle}>{dpEnabled ? 'Disable' : 'Enable'}</button></td>
           </tr>
 
-          <tr>
-            <td>Access Logging</td>
-            <td>Log access events (filterable)</td>
-            <td><span className="status" style={{ backgroundColor: accessLoggingEnabled ? '#e0f9e8' : '#ffe6e6', color: accessLoggingEnabled ? '#28a745' : '#d9534f' }}>{accessLoggingEnabled ? 'Enabled' : 'Disabled'}</span></td>
-            <td><button className="toggle-btn" onClick={() => setAccessLoggingEnabled(p => !p)}>{accessLoggingEnabled ? 'Disable' : 'Enable'}</button></td>
-          </tr>
+         
 
           <tr>
             <td>Manual Key Rotation</td>
@@ -266,8 +256,6 @@ useEffect(() => {
         return renderSecurityPanel();
       case 'Device Monitoring':
         return renderDeviceMonitor();
-      case 'Debug Tools':
-        return renderDebugTools();
       default:
         return <div>Select a section</div>;
     }
@@ -282,7 +270,6 @@ useEffect(() => {
           <li onClick={() => setActiveSection('Model Insights')}>Model Insights</li>
           <li onClick={() => setActiveSection('Security')}>Security Panel</li>
           <li onClick={() => setActiveSection('Device Monitoring')}>Devices</li>
-          <li onClick={() => setActiveSection('Debug Tools')}>Debug Tools</li>
           <li onClick={() => window.location.href = '/'}>Logout</li>
         </ul>
       </aside>
