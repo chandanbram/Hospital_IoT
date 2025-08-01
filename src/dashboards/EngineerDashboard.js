@@ -206,44 +206,55 @@ function EngineerDashboard() {
       </table>
     </div>
   );
+const [deviceStatusList, setDeviceStatusList] = useState([]);
+
+useEffect(() => {
+  const fetchDeviceStatus = () => {
+    axios.get(`${AGGREGATOR_BASE_URL}/api/device-status`)
+      .then(res => setDeviceStatusList(res.data))
+      .catch(err => console.error("Failed to fetch device status:", err));
+  };
+
+  fetchDeviceStatus(); // fetch immediately
+  const interval = setInterval(fetchDeviceStatus, 5000); // update every 5s
+  return () => clearInterval(interval);
+}, []);
 
   const renderDeviceMonitor = () => (
-    <div className="panel-card">
-      <h3>IoT Device Monitor</h3>
-      <table>
-        <thead><tr><th>Device</th><th>Location</th><th>Status</th><th>Action</th></tr></thead>
-        <tbody>
-          <tr><td>Dev-01</td><td>ICU</td><td><span className="status online">Online</span></td><td><button>Restart</button></td></tr>
-          <tr><td>Dev-03</td><td>Ward A</td><td><span className="status lagging">Lagging</span></td><td><button>Restart</button></td></tr>
-          <tr><td>Dev-07</td><td>ER</td><td><span className="status offline">Offline</span></td><td><button>Restart</button></td></tr>
-        </tbody>
-      </table>
-    </div>
-  );
+  <div className="panel-card">
+    <h3>IoT Device Monitor</h3>
+    <table>
+      <thead>
+        <tr>
+          <th>Device</th>
+          <th>Location</th>
+          <th>Status</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        {deviceStatusList.map((dev, idx) => (
+          <tr key={idx}>
+            <td>{dev.id}</td>
+            <td>{dev.location || 'Unknown'}</td>
+            <td>
+              <span className={`status ${dev.status.toLowerCase()}`}>
+                {dev.status.charAt(0).toUpperCase() + dev.status.slice(1)}
+              </span>
+            </td>
+            <td>
+              <button onClick={() => alert(`⏳ Restart signal sent to ${dev.id}`)}>
+                Restart
+              </button>
+            </td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  </div>
+);
 
-  const renderDebugTools = () => (
-    <div className="panel-card debug-section">
-      <h3>Advanced Debug Tools</h3>
-      <div className="debug-subsection">
-        <h4>Live Console Access</h4>
-        <p>Launch a restricted terminal session for on-device debugging.</p>
-        <button className="debug-btn">Open Console</button>
-      </div>
-      <div className="debug-subsection">
-        <h4>Data Download</h4>
-        <p>Export device metrics or logs.</p>
-        <div className="debug-buttons">
-          <button className="debug-btn">Export CSV</button>
-          <button className="debug-btn">Export JSON</button>
-        </div>
-      </div>
-      <div className="debug-subsection">
-        <h4>Network Bandwidth Monitor</h4>
-        <p>Live bandwidth usage:</p>
-        <div className="bandwidth-box"><strong>3.5 Mbps</strong></div>
-      </div>
-    </div>
-  );
+  
 
   const renderSection = () => {
     switch (activeSection) {
