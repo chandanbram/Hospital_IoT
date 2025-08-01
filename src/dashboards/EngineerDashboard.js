@@ -267,8 +267,6 @@ useEffect(() => {
         return renderModelInsights();
       case 'Security':
         return renderSecurityPanel();
-      case 'Device Monitoring':
-        return renderDeviceMonitor();
       default:
         return <div>Select a section</div>;
     }
@@ -282,7 +280,6 @@ useEffect(() => {
           <li onClick={() => setActiveSection('Dashboard')}>Dashboard</li>
           <li onClick={() => setActiveSection('Model Insights')}>Model Insights</li>
           <li onClick={() => setActiveSection('Security')}>Security Panel</li>
-          <li onClick={() => setActiveSection('Device Monitoring')}>Devices</li>
           <li onClick={() => window.location.href = '/'}>Logout</li>
         </ul>
       </aside>
