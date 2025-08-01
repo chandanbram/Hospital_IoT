@@ -36,6 +36,18 @@ function EngineerDashboard() {
       setDpEnabled(!newState); // revert change on error
     });
 };
+const handleRestart = async (deviceId) => {
+  try {
+    const res = await axios.post(`${AGGREGATOR_BASE_URL}/api/restart_device`, {
+      device_id: deviceId
+    });
+    alert(`✅ Restart signal sent to ${deviceId}`);
+    console.log("Restart response:", res.data);
+  } catch (err) {
+    console.error("❌ Failed to restart device:", err);
+    alert("⚠️ Failed to send restart command.");
+  }
+};
 
 
   const handleStartTraining = async () => {
@@ -233,10 +245,7 @@ useEffect(() => {
               </span>
             </td>
             <td>
-              <button onClick={() => {
-                handleRestart(dev.id);
-                alert(`⏳ Restart signal sent to ${dev.id}`);
-              }}>
+              <button onClick={() => handleRestart(dev.id)}>
                 Restart
               </button>
 
