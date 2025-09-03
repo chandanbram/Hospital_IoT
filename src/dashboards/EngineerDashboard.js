@@ -13,7 +13,7 @@ function EngineerDashboard() {
   const [performance, setPerformance] = useState("Accuracy: 94.3% | Loss: 0.12");
   const [trainingInProgress, setTrainingInProgress] = useState(false);
 
-  const AGGREGATOR_BASE_URL = ' https://sculpture-illustrated-artist-redeem.trycloudflare.com';
+  const AGGREGATOR_BASE_URL = 'https://instruments-seminar-olympics-routines.trycloudflare.com';
 
   useEffect(() => {
     axios.get(`${AGGREGATOR_BASE_URL}/dp-status`)
@@ -292,6 +292,7 @@ useEffect(() => {
 }
 
 export default EngineerDashboard;
+
 
 
 
