@@ -196,7 +196,7 @@ export default function DoctorDashboard() {
           <>
             <div className="profile-card">
               <div className="details">
-                <h2>Dr. Chaithra Chandrashekar</h2>
+                <h2>Dr. M B Nirmala</h2>
                 <p>Snr. Physician</p>
                 <div>8 Years Experience | 2,598 Patients | 1,537 Reviews</div>
               </div>
@@ -288,3 +288,4 @@ export default function DoctorDashboard() {
     </div>
   );
 }
+
